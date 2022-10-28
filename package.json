@@ -1,0 +1,24 @@
+{
+  "name": "twitter-competition-bot",
+  "version": "1.0.0",
+  "description": "A bot to scan tweets and enter into competitions",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/J-Bye/twitter-competition-bot.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/J-Bye/twitter-competition-bot/issues"
+  },
+  "homepage": "https://github.com/J-Bye/twitter-competition-bot#readme",
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "fs": "^0.0.1-security",
+    "twitter-api-v2": "^1.12.9"
+  }
+}
