@@ -1,9 +1,9 @@
-const {TwitterApi} = require("twitter-api-v2");
-const dotenv = require('dotenv');
+import {TwitterApi} from "twitter-api-v2";
+import dotenv from 'dotenv';
 
 dotenv.config();
 
-const client = new TwitterApi({
+var client = new TwitterApi({
     appKey: process.env.TWITTER_APP_KEY,
     appSecret: process.env.TWITTER_APP_SECRET,
     accessToken: process.env.TWITTER_ACCESS_TOKEN,
@@ -12,4 +12,4 @@ const client = new TwitterApi({
 
 const rwClient = client.readWrite
 
-module.exports = rwClient
+export default rwClient
