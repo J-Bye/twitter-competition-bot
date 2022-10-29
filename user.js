@@ -8,7 +8,7 @@ export default class User{
 
     async followUser(userId){
         await this.runFollowPolicy()
-        // await rwClient.v2.follow(this.loggedInUserId, userId);
+        await rwClient.v2.follow(this.loggedInUserId, userId);
     }
 
     async runFollowPolicy(){
