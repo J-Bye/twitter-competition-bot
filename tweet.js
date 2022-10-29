@@ -1,6 +1,5 @@
 import rwClient from "./twitterClient.js";
 import User from './user.js';
-import config from "./config.js";
 
 export default class Tweet {
     constructor(tweet){
@@ -8,7 +7,7 @@ export default class Tweet {
         this.sensitiveContent = tweet.possibly_sensitive
     }
 
-    //Getters
+    //Getters to determine tweet actions
     get shouldFollowUser(){
         let tweetToSearch = this.tweet.text.toLowerCase();
         return tweetToSearch.includes('follow')
@@ -41,7 +40,7 @@ export default class Tweet {
     
     }
 
-    //Functions
+    //Find the appropriate actions to perform and execute them, log results.
     async process(){
         let followed = false;
         let liked = false;
@@ -66,7 +65,8 @@ export default class Tweet {
             retweeted = true;
         }
 
-        //THIS HAS BEEN TURNED OFF DUE TO TWITTER API LIMITATIONS
+        //THIS HAS BEEN TURNED OFF DUE TO TWITTER A BAN ON BOTS MENTIONING USERS
+        
         // if(this.shouldTagFriends){
         //     await user.tagFriends(this.tweet.text, this.tweet.id)
         //     friendsTagged = true;

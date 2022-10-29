@@ -11,6 +11,7 @@ export default class User{
         await rwClient.v2.follow(this.loggedInUserId, userId);
     }
 
+    //The bot must follow a FIFO policy once it reaches 2k following due to Twitter restrictions
     async runFollowPolicy(){
         let following = [];
         try{
@@ -24,17 +25,18 @@ export default class User{
         catch(err){
             console.error(err)
         }
-        //TEST THIS SOON!
+
         if(following.length < 2000){
             return
         }
 
         const userToUnfollow = following.pop();
         if(userToUnfollow){
-            console.log(userToUnfollow.id);
             return rwClient.v2.unfollow(this.loggedInUserId, userToUnfollow.id);
         }
     }
+
+    //Actions a user can make against a tweet
 
     async tweet(description){
         try {
@@ -65,20 +67,22 @@ export default class User{
     async tagFriends(tweetDescription, tweetId){
         const tweetToSearch = tweetDescription.toLowerCase();
 
-        //Attempt to extract single digit number of friends. If null (eg. 'a' friend) just tag
+        //Attempt to extract single digit number of friends
         let numberOfFriendsToTag = Number(tweetToSearch.split('tag ')[1].split('')[0]);
 
+        //If null (eg. 'a' friend) just tag 1
         if(isNaN(numberOfFriendsToTag)){
             numberOfFriendsToTag = 1;
         }
 
-        //Combine list of friends and combine into a string of required length
+        //Combine the necessary number of friends to tag into a string
         let usersToTagString = config.friendsToTag
         .slice(0, numberOfFriendsToTag)
         .flatMap((x)=>x.handle)
         .join()
         .replaceAll(',', ' ')
 
+        //Random emoji appends the comment to avoid Twitter ban on duplicate comments
         let comment = `${usersToTagString} 🤞 ${this.getRandomEmoji()}`
         return await this.commentOnTweet(comment, tweetId)
     }
@@ -90,6 +94,7 @@ export default class User{
           );
     }
 
+    //Can be used to make a tweet appear unique when tagging the same users repetitively
     getRandomEmoji(){
         const emojis = config.emojis;
         return emojis[Math.floor(Math.random()*emojis.length)]

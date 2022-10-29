@@ -1,17 +1,16 @@
-import mongodb, { MongoClient } from 'mongodb'
+import { MongoClient } from 'mongodb'
 import dotenv from 'dotenv';
-dotenv.config();
 
-// const client = new MongoClient(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
+dotenv.config();
 
 export async function connectToCluster() {
     let mongoClient;
  
     try {
         mongoClient = new MongoClient(process.env.MONGODB_URI);
-        console.log('Connecting to MongoDB Atlas cluster...');
+        console.log('Connecting to external database...');
         await mongoClient.connect();
-        console.log('Successfully connected to MongoDB Atlas!');
+        console.log('Successfully connected to the MongoDB Atlas data engine!');
  
         return mongoClient;
     } catch (error) {
