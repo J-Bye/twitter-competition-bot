@@ -2,11 +2,10 @@ import rwClient from "./twitterClient.js";
 import config from "./config.js";
 import Tweet from './tweet.js';
 import { connectToCluster } from "./databaseClient.js";
-import mongodb from 'mongodb'
 
 
 function findTweets(){
-    const maxResults = Math.floor(config.searchRateLimit);
+    const maxResults = config.searchRateLimit;
 
     try{
         return rwClient.v2.search(`("retweet to enter" OR "like to enter" OR "to enter: like" OR "to enter: follow" OR "competition time") -is:retweet -is:quote -is:reply -furry -NFT -WL -Whitelist -blockchain`, { 'max_results': maxResults, 'expansions': 'author_id', 'tweet.fields': 'possibly_sensitive'});;
@@ -64,9 +63,6 @@ async function start(){
 
                 await databaseTweetCursor.forEach((tweet)=>{enteredCompetitionTweetIds.push(tweet.tweetId)})
 
-                console.log(JSON.stringify(enteredCompetitionTweetIds))
-
-            // const searchQuery = config.searchPhrases.join(" OR ")
             tweets = await findTweets()
             const foundTweets = await tweets.data;
            
@@ -75,7 +71,9 @@ async function start(){
             .every((x)=> x != tweet.id))
 
             await processTweets(tweetsToAction, savedTweets);
-            start()
+
+            //Restart the process each time
+            start();
 
         }
         catch(err){
