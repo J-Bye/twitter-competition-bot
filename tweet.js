@@ -18,7 +18,8 @@ export default class Tweet {
         let tweetToSearch = this.tweet.text.toLowerCase();
         return tweetToSearch.includes('retweet') ||
                tweetToSearch.includes('share') ||
-               tweetToSearch.includes(' rt')
+               tweetToSearch.includes(' rt') ||
+               tweetToSearch.includes('RT')
     }
     
     get shouldTagFriends(){
@@ -72,13 +73,13 @@ export default class Tweet {
         // }
 
         console.log(
-            `Tweet: ${this.tweet.text}
-            ----------------------------------------------------------------
-            ACTIONS TAKEN:
-            Liked: ${liked}
-            Followed: ${followed}
-            Retweeted: ${retweeted}
-            FriendsTagged: ${friendsTagged} <- TEMPORARILY UNAVAILABLE`);
+`Tweet: ${this.tweet.text}
+----------------------------------------------------------------
+ACTIONS TAKEN:
+Liked: ${liked}
+Followed: ${followed}
+Retweeted: ${retweeted}
+FriendsTagged: ${friendsTagged}`);
             const entered = liked || followed || retweeted || friendsTagged
             return entered;
     }    

@@ -7,8 +7,12 @@ import { connectToCluster } from "./databaseClient.js";
 function findTweets(){
     const maxResults = config.searchRateLimit;
 
+    const searchTerms = `"${config.searchItems.join('" OR "')}"`;
+    const negativeSearchItems = `-${config.negativeSearchItems.join(' -')}`
+
+    const params = { 'max_results': maxResults, 'expansions': 'author_id', 'tweet.fields': 'possibly_sensitive'}
     try{
-        return rwClient.v2.search(`("retweet to enter" OR "like to enter" OR "to enter: like" OR "to enter: follow" OR "competition time") -is:retweet -is:quote -is:reply -furry -NFT -WL -Whitelist -blockchain`, { 'max_results': maxResults, 'expansions': 'author_id', 'tweet.fields': 'possibly_sensitive'});;
+        return rwClient.v2.search(`(${searchTerms}) -is:retweet -is:quote -is:reply ${negativeSearchItems}`, params);;
     } catch (e){
         console.log(e)
     }
@@ -39,7 +43,10 @@ async function processTweets(tweets, mongoDbCollection){
         const randomNumber = Math.floor(Math.random() * (config.maxRandomWait - 0 + 1) + 0);
         const randomWaitTime = config.minTweetInterval + randomNumber;
 
-        console.log(`Sleeping for ${(Math.floor(randomWaitTime/1000)/60)} minutes 😴`)
+        console.log(`
+----------------------------------------------------------------
+Sleeping for ${(Math.floor(randomWaitTime/1000)/60)} minutes 😴
+----------------------------------------------------------------`)
         await new Promise(resolve => setTimeout(resolve, randomWaitTime));
     
     }
