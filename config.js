@@ -3,7 +3,7 @@ const config = {
     searchItems: ['retweet to enter', 'like to enter', 'to enter: retweet', 'to enter: follow', 'this tweet to enter', 'Retweet to win'],
     
     //Terms to exclude from the search. These are some common, annoying, undesirable keywords
-    negativeSearchItems : ['NFT', 'WL', 'Furry', 'ROBLOX', 'whitelist', 'OnlyFans', 'Whitelist', 'ROBUX', 'nudes', 'GTA', 'blockchain', 'crypto'],
+    negativeSearchItems : ['NFT', 'WL', 'Furry', 'ROBLOX', 'whitelist', 'OnlyFans', 'Whitelist', 'ROBUX', 'nudes', 'GTA', 'blockchain', 'crypto', 'Fortnite'],
     
     //These are the friends who will be tagged if tagging is required (TURNED OFF CURRENTLY)
     friendsToTag : [
