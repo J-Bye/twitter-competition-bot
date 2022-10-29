@@ -1,6 +1,6 @@
 const config = {
     searchItems: ['retweet to enter', 'like to enter', 'to enter: retweet', 'to enter: follow', 'this tweet to enter', 'Retweet to win'],
-    negativeSearchItems : ['NFT', 'WL', 'Furry', 'ROBLOX', 'whitelist', 'OnlyFans', 'Whitelist', 'ROBUX', 'nudes'],
+    negativeSearchItems : ['NFT', 'WL', 'Furry', 'ROBLOX', 'whitelist', 'OnlyFans', 'Whitelist', 'ROBUX', 'nudes', 'GTA', 'blockchain', 'crypto'],
     friendsToTag : [
     {   name: 'Josh', 
         twitterId: 1369402574743498755, 
