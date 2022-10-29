@@ -35,7 +35,8 @@ export default class Tweet {
                tweetToSearch.includes('favorite this tweet') ||
                tweetToSearch.includes('favourite this tweet') ||
                tweetToSearch.includes('like” this tweet') ||
-               tweetToSearch.includes('like and retweet') 
+               tweetToSearch.includes('like and retweet') ||
+               tweetToSearch.includes('❤️')
     
     }
 
@@ -71,14 +72,13 @@ export default class Tweet {
         // }
 
         console.log(
-`Tweet: ${this.tweet.text}
------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-Liked: ${liked}
-Followed: ${followed}
-Retweeted: ${retweeted}
-FriendsTagged: ${friendsTagged} <- TEMPORARILY UNAVAILABLE
-______________________________________________________________________________________________________________________________________________________________________
-            `);
+            `Tweet: ${this.tweet.text}
+            ----------------------------------------------------------------
+            ACTIONS TAKEN:
+            Liked: ${liked}
+            Followed: ${followed}
+            Retweeted: ${retweeted}
+            FriendsTagged: ${friendsTagged} <- TEMPORARILY UNAVAILABLE`);
             const entered = liked || followed || retweeted || friendsTagged
             return entered;
     }    

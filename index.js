@@ -1,10 +1,9 @@
 import rwClient from "./twitterClient.js";
-import fs from 'fs'
 import config from "./config.js";
 import Tweet from './tweet.js';
- 
+import { connectToCluster } from "./databaseClient.js";
+import mongodb from 'mongodb'
 
-let enteredCompetitionTweetIds = [];
 
 function findTweets(){
     const maxResults = Math.floor(config.searchRateLimit);
@@ -17,9 +16,7 @@ function findTweets(){
     
 }
 
-async function processTweets(tweets){
-
-    const competitionTweetsPromises = []
+async function processTweets(tweets, mongoDbCollection){
 
     for(let i = 0; i < tweets.length; i++){
         const tweet = new Tweet(tweets[i]);
@@ -34,17 +31,9 @@ async function processTweets(tweets){
             continue
         }
 
-        enteredCompetitionTweetIds.push(tweet.id);
+        //PUSH TO MONGO DB HERE
+        await mongoDbCollection.insertOne({tweetId: tweet.tweet.id, text: tweet.tweet.text});
 
-        const tweetIdsString = JSON.stringify(enteredCompetitionTweetIds);
-        fs.writeFile('data.json', tweetIdsString, (err) => {
-        if (err){
-            console.log(err);
-        }
-        else {
-          console.log("Tweet id saved successfully...");
-        }
-        })
         
         //Twitters rate limit * the current iteration (they each fire off asynchronously) plus a
         //random number, up to 120000 (4 mins in ms) to avoid detection
@@ -55,9 +44,6 @@ async function processTweets(tweets){
         await new Promise(resolve => setTimeout(resolve, randomWaitTime));
     
     }
-    console.log(`
-    New competitions so far entered: ${tweets.length} ✅
-    Total competitions entered: ${enteredCompetitionTweetIds.length} ✅`)
 
 }
 
@@ -65,18 +51,30 @@ async function processTweets(tweets){
 async function start(){
     let tweets = []
         try{
+            const enteredCompetitionTweetIds = [];
+
+
+                const mongoClient = await connectToCluster();
+                const db = mongoClient.db('twitter-competitions');
+                const savedTweets = db.collection('tweets');
+
+
+                const databaseTweetCursor = await savedTweets.find();
+
+
+                await databaseTweetCursor.forEach((tweet)=>{enteredCompetitionTweetIds.push(tweet.tweetId)})
+
+                console.log(JSON.stringify(enteredCompetitionTweetIds))
+
             // const searchQuery = config.searchPhrases.join(" OR ")
             tweets = await findTweets()
             const foundTweets = await tweets.data;
-            
-            const rawdata = fs.readFileSync('data.json');
-            enteredCompetitionTweetIds = JSON.parse(rawdata);
-
+           
             const tweetsToAction = foundTweets.data
             .filter((tweet)=>enteredCompetitionTweetIds
             .every((x)=> x != tweet.id))
 
-            await processTweets(tweetsToAction);
+            await processTweets(tweetsToAction, savedTweets);
             start()
 
         }
