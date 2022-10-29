@@ -1,5 +1,7 @@
 import rwClient from "./twitterClient.js";
-import User from './user.js'
+import User from './user.js';
+import config from "./config.js";
+
 export default class Tweet {
     constructor(tweet){
         this.tweet = tweet,
@@ -62,27 +64,24 @@ export default class Tweet {
             retweeted = true;
         }
 
-        if(this.shouldTagFriends){
-            await user.tagFriends(this.tweet.id, this.tweet.text)
-        }
+        //THIS HAS BEEN TURNED OFF DUE TO TWITTER API LIMITATIONS
+        // if(this.shouldTagFriends){
+        //     await user.tagFriends(this.tweet.text, this.tweet.id)
+        //     friendsTagged = true;
+        // }
 
         console.log(
-    `Tweet: ${this.tweet.text}
-     -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-     Liked: ${liked}
-     Followed: ${followed}
-     Retweeted: ${retweeted}
-     FriendsTagged: ${friendsTagged}
-    _______________________________________________________________________________________________________________________________________________________________________
+`Tweet: ${this.tweet.text}
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Liked: ${liked}
+Followed: ${followed}
+Retweeted: ${retweeted}
+FriendsTagged: ${friendsTagged} <- TEMPORARILY UNAVAILABLE
+______________________________________________________________________________________________________________________________________________________________________
             `);
             const entered = liked || followed || retweeted || friendsTagged
             return entered;
     }    
-
-    getRandomEmoji(){
-        const emojis = config.emojis;
-        return emojis[Math.floor(Math.random()*emojis.length)]
-    }
 
     
 }

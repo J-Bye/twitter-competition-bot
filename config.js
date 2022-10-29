@@ -1,6 +1,6 @@
 const config = {
-    competitionTweetSearchPhrases: ['retweet to enter', 'like to enter', 'to enter: retweet', 'to enter: follow', 'this tweet to enter'],
-    
+    searchItems: ['retweet to enter', 'like to enter', 'to enter: retweet', 'to enter: follow', 'this tweet to enter'],
+    negativeSearchItems : ['NFT', 'WL', 'Furry', 'ROBLOX', 'whitelist'],
     friendsToTag : [
     {   name: 'Josh', 
         twitterId: 1369402574743498755, 

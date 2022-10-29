@@ -6,7 +6,9 @@ import Tweet from './tweet.js';
 
 let enteredCompetitionTweetIds = [];
 
-function findTweets(searchParameters, maxResults){
+function findTweets(){
+    const maxResults = Math.floor(config.searchRateLimit);
+
     try{
         return rwClient.v2.search(`("retweet to enter" OR "like to enter" OR "to enter: like" OR "to enter: follow" OR "competition time") -is:retweet -is:quote -is:reply -furry -NFT -WL -Whitelist -blockchain`, { 'max_results': maxResults, 'expansions': 'author_id', 'tweet.fields': 'possibly_sensitive'});;
     } catch (e){
@@ -63,19 +65,18 @@ async function processTweets(tweets){
 async function start(){
     let tweets = []
         try{
-            const searchQuery = config.competitionTweetSearchPhrases.join(" OR ")
-            tweets = await findTweets(searchQuery, Math.floor(config.searchRateLimit/config.competitionTweetSearchPhrases.length))
+            // const searchQuery = config.searchPhrases.join(" OR ")
+            tweets = await findTweets()
             const foundTweets = await tweets.data;
+            
             const rawdata = fs.readFileSync('data.json');
             enteredCompetitionTweetIds = JSON.parse(rawdata);
+
             const tweetsToAction = foundTweets.data
             .filter((tweet)=>enteredCompetitionTweetIds
             .every((x)=> x != tweet.id))
 
             await processTweets(tweetsToAction);
-            const randomNumber = Math.floor(Math.random() * (3500000 - 0 + 1) + 0);
-
-            await new Promise(resolve => setTimeout(resolve, randomNumber));
             start()
 
         }
