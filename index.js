@@ -54,6 +54,8 @@ async function start(){
             }
             else{
                 console.error(err);
+                //try to restart!
+                start()
             }
         }
 
