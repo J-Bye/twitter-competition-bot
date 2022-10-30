@@ -7,7 +7,8 @@ import { connectToCluster } from "./databaseClient.js";
 start()
 
 async function start(){
-    let tweets = []
+        //All exceptions are handled at this level because the only exception we expect to handle is the rate limit,
+        //otherwise we can just log it.
         try{
             //Connect with database to retrieve which tweets have been entered
             const enteredCompetitionTweetIds = [];
@@ -17,9 +18,9 @@ async function start(){
             const databaseTweetCursor = await savedTweets.find();
             await databaseTweetCursor.forEach((tweet)=>{enteredCompetitionTweetIds.push(tweet.tweetId)})
 
+            
             //Search Twitter API for new competition tweets
-            tweets = await findTweets()
-            const foundTweets = await tweets.data;
+            const foundTweets = (await findTweets()).data;
 
             //Remove already entered competitions from search results
             const tweetsToAction = foundTweets.data
@@ -34,7 +35,26 @@ async function start(){
 
         }
         catch(err){
-            console.error(err)
+
+            //If we hit the rate limit, wait a while and restart
+            if(err.rateLimit.reset && err.rateLimit.remaining < 1){
+                //Calculate wait time until rate limit hit
+                const now = Date.now();
+                const requestsResetMilliseconds = err.rateLimit.reset * 1000;
+
+                //Random number added to reduce suspicion
+                const randomNumber = Math.floor(Math.random() * (config.maxRandomWait - 0 + 1) + 0);
+                const waitTime = (requestsResetMilliseconds - now) + randomNumber;
+
+                console.log(`Max requests reached! Waiting for ${(waitTime/1000)/60} minutes ⏳`)
+
+                //await the timer to elapse and restart
+                await new Promise(resolve => setTimeout(resolve, waitTime));
+                start();
+            }
+            else{
+                console.error(err);
+            }
         }
 
 }
@@ -74,12 +94,8 @@ function findTweets(){
     const searchTerms = `"${config.searchItems.join('" OR "')}"`;
     const negativeSearchItems = `-${config.negativeSearchItems.join(' -')}`
     const params = { 'max_results': config.searchRateLimit, 'expansions': 'author_id', 'tweet.fields': 'possibly_sensitive'}
-    
-    try{
-        return rwClient.v2.search(`(${searchTerms}) -is:retweet -is:quote -is:reply ${negativeSearchItems}`, params);;
-    } catch (e){
-        console.log(e)
-    }
+
+    return rwClient.v2.search(`(${searchTerms}) -is:retweet -is:quote -is:reply ${negativeSearchItems}`, params);
     
 }
 

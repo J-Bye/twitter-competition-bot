@@ -23,7 +23,7 @@ export default class User{
             }
         }
         catch(err){
-            console.error(err)
+            throw err;
         }
 
         if(following.length < 2000){
@@ -41,8 +41,8 @@ export default class User{
     async tweet(description){
         try {
             await rwClient.v2.tweet(description)
-        } catch (e) {
-            console.error(e)
+        } catch (err) {
+            throw err;
         }
     }
 
@@ -51,7 +51,7 @@ export default class User{
             await rwClient.v2.like(this.loggedInUserId, tweetId)
         }
         catch(err){
-            console.error(err)
+            throw err;
         }
     }
 
@@ -60,7 +60,7 @@ export default class User{
             await rwClient.v2.retweet(this.loggedInUserId, tweetId)
         }
         catch(err){
-            console.error(err)
+            throw err;
         }
     }
 
