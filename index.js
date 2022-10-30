@@ -70,15 +70,25 @@ async function processTweets(tweets, mongoDbCollection){
         if(tweet.sensitiveContent){continue};
 
         //Complete follow, like, retweet, tag actions where applicable
-        const processed = await tweet.process();
+        const tweetProcessedData = await tweet.process();
 
         //If no actions can be made, skip the tweet!
-        if(!processed){
+        if(!tweetProcessedData.processed){
             continue
         }
 
         //Add successfully entered competition tweets to external database (Heroku wipes data on restart, data is stored in mongo)
-        await mongoDbCollection.insertOne({tweetId: tweet.tweet.id, text: tweet.tweet.text});
+        await mongoDbCollection.insertOne(
+            {
+                tweetId: tweet.tweet.id, text: 
+                tweet.tweet.text, 
+                tweetCreatedAt: tweet.tweet.created_at, 
+                enteredCompetitionTime: tweetProcessedData.dateProcessed,
+                liked: tweetProcessedData.liked,
+                followed: tweetProcessedData.followed,
+                retweeted: tweetProcessedData.retweeted,
+                taggedFriends: tweetProcessedData.friendsTagged
+            });
 
         //Random wait interval to avoid detection, defined by the config. User information
         const randomNumber = Math.floor(Math.random() * (config.maxRandomWait - 0 + 1) + 0);
@@ -95,7 +105,7 @@ function findTweets(){
     //Parse search criteria from config file and return the search promise
     const searchTerms = `"${config.searchItems.join('" OR "')}"`;
     const negativeSearchItems = `-${config.negativeSearchItems.join(' -')}`
-    const params = { 'max_results': config.searchRateLimit, 'expansions': 'author_id', 'tweet.fields': 'possibly_sensitive'}
+    const params = { 'max_results': config.searchRateLimit, 'expansions': 'author_id', 'tweet.fields': 'possibly_sensitive,created_at'}
 
     return rwClient.v2.search(`(${searchTerms}) -is:retweet -is:quote -is:reply ${negativeSearchItems}`, params);
     

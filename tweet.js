@@ -66,7 +66,7 @@ export default class Tweet {
         }
 
         //THIS HAS BEEN TURNED OFF DUE TO TWITTER A BAN ON BOTS MENTIONING USERS
-        
+
         // if(this.shouldTagFriends){
         //     await user.tagFriends(this.tweet.text, this.tweet.id)
         //     friendsTagged = true;
@@ -81,7 +81,16 @@ Followed: ${followed}
 Retweeted: ${retweeted}
 FriendsTagged: ${friendsTagged}`);
             const entered = liked || followed || retweeted || friendsTagged
-            return entered;
+const currentDate = new Date().toISOString()
+            return {
+                processed: entered,
+                tweetId: this.tweet.id, 
+                dateProcessed: currentDate, 
+                liked: liked, 
+                followed: followed, 
+                retweeted: retweeted, 
+                friendsTagged: friendsTagged
+            };
     }    
 
     
