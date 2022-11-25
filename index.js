@@ -3,6 +3,11 @@ import config from "./config.js";
 import Tweet from './tweet.js';
 import { connectToCluster } from "./databaseClient.js";
 
+//mongoDb connections are limited, reuse the connection!
+const mongoClient = await connectToCluster();
+const db = mongoClient.db('twitter-competitions');
+const savedTweets = db.collection('tweets');
+
 //Main startup method
 start()
 
@@ -10,15 +15,11 @@ async function start(){
         //All exceptions are handled at this level because the only exception we expect to handle is the rate limit,
         //otherwise we can just log it.
         try{
-            //Connect with database to retrieve which tweets have been entered
+            //Retrieve from database which tweets have been entered
             const enteredCompetitionTweetIds = [];
-            const mongoClient = await connectToCluster();
-            const db = mongoClient.db('twitter-competitions');
-            const savedTweets = db.collection('tweets');
             const databaseTweetCursor = await savedTweets.find();
             await databaseTweetCursor.forEach((tweet)=>{enteredCompetitionTweetIds.push(tweet.tweetId)})
 
-            
             //Search Twitter API for new competition tweets
             const foundTweets = (await findTweets()).data;
 
@@ -27,9 +28,16 @@ async function start(){
             .filter((tweet)=>enteredCompetitionTweetIds
             .every((x)=> x != tweet.id))
 
+            //WAIT A MINIMUM OF 10 MINUTES
+            const startTime = Date.now();
             //Process competition actions against filtered tweets
             await processTweets(tweetsToAction, savedTweets);
-
+            const endTime = Date.now();
+            const timeTaken = endTime - startTime;
+            if(timeTaken < config.searchRateLimitsMilliseconds){
+                const timeToWait = config.searchRateLimitsMilliseconds - timeTaken
+                await new Promise(resolve => setTimeout(resolve, timeToWait));
+            }
             //Restart process!
             start();
 
@@ -105,7 +113,7 @@ function findTweets(){
     //Parse search criteria from config file and return the search promise
     const searchTerms = `"${config.searchItems.join('" OR "')}"`;
     const negativeSearchItems = `-${config.negativeSearchItems.join(' -')}`
-    const params = { 'max_results': config.searchRateLimit, 'expansions': 'author_id', 'tweet.fields': 'possibly_sensitive,created_at'}
+    const params = { 'max_results': config.searchRateLimitResults, 'expansions': 'author_id', 'tweet.fields': 'possibly_sensitive,created_at'}
 
     return rwClient.v2.search(`(${searchTerms}) -is:retweet -is:quote -is:reply ${negativeSearchItems}`, params);
     

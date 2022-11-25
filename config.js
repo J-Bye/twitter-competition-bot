@@ -39,7 +39,10 @@ const config = {
     "👢","👞","👟","🧣","🧤","🧥","🧦","🧢","👒","🎩","🎓","👑","⛑","🎒","👝","👛","👜","💼","👓","🕶","🌂","☂️"],
     
     //Number of items to search for
-    searchRateLimit: 100
+    searchRateLimitResults: 100,
+
+    //Based on 500k searches a month, at 100 searches results a pop, we must wait at least 10 minutes between searches to avoid hitting the limit
+    searchRateLimitsMilliseconds: 600000
 }
 
 export default config;
