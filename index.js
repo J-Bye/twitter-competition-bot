@@ -51,7 +51,7 @@ async function start(){
         catch(err){
 
             //If we hit the rate limit, wait a while and restart
-            if(err?.rateLimit?.reset && err.rateLimit.remaining < 1){
+            if(err.rateLimit != undefined && err.rateLimit.remaining < 1){
                 //Calculate wait time until rate limit hit
                 const now = Date.now();
                 const requestsResetMilliseconds = err.rateLimit.reset * 1000;
