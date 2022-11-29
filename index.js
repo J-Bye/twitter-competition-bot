@@ -40,9 +40,11 @@ async function start(){
             await processTweets(tweetsToAction, savedTweets);
             const endTime = Date.now();
             const timeTaken = endTime - startTime;
-            if(timeTaken < config.searchRateLimitsMilliseconds){
+            if(timeTaken < config.searchRateLimitsMilliseconds){                
                 const timeToWait = config.searchRateLimitsMilliseconds - timeTaken
-                await new Promise(resolve => setTimeout(resolve, waitTime));
+                console.log(`Took ${timeTaken/60000} minutes to process tweets, requires ${config.searchRateLimitsMilliseconds/60000}... 
+                Waiting the remaining ${timeToWait/60000} minutes before continuing`)
+                await new Promise(resolve => setTimeout(resolve, timeToWait));
             }
             //Restart process!
             start();
@@ -67,7 +69,7 @@ async function start(){
                 start();
             }
             else{
-                console.error(err);
+                console.log(err);
                 //try to restart!
                 start()
             }
