@@ -1,9 +1,9 @@
-import mongo from 'mongodb'
-import dotenv from 'dotenv';
+const mongo = require('mongodb')
+const dotenv = require('dotenv');
 
 dotenv.config();
 
-export async function connectToCluster() {
+async function connectToCluster() {
     let mongoClient = mongo.MongoClient;
  
     try {
@@ -18,3 +18,5 @@ export async function connectToCluster() {
         process.exit();
     }
  }
+
+ module.exports = {connectToCluster}

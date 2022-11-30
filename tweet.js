@@ -1,7 +1,7 @@
-import rwClient from "./twitterClient.js";
-import User from './user.js';
+const rwClient = require("./twitterClient.js");
+const User = require('./user.js');
 
-export default class Tweet {
+class Tweet {
     constructor(tweet){
         this.tweet = tweet,
         this.sensitiveContent = tweet.possibly_sensitive
@@ -95,3 +95,5 @@ const currentDate = new Date().toISOString()
 
     
 }
+
+module.exports = Tweet

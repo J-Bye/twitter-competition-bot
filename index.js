@@ -1,8 +1,7 @@
-import rwClient from "./twitterClient.js";
-import config from "./config.js";
-import Tweet from './tweet.js';
-import { connectToCluster } from "./databaseClient.js";
-
+const rwClient = require("./twitterClient.js");
+const config = require("./config.js");
+const Tweet = require('./tweet.js');
+const databaseClient = require("./databaseClient.js");
 let mongoClient;
 let savedTweets;
 
@@ -10,7 +9,7 @@ configureAndStart();
 
 async function configureAndStart(){
     //mongoDb connections are limited, reuse the connection!
-    mongoClient = await connectToCluster();
+    mongoClient = await databaseClient.connectToCluster();
     const db = mongoClient.db('twitter-competitions');
     savedTweets = db.collection('tweets');
     //Main startup method

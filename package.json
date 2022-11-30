@@ -1,5 +1,4 @@
 {
-  "type": "module",
   "name": "twitter-competition-bot",
   "version": "1.0.0",
   "description": "A bot to scan tweets and enter into competitions",

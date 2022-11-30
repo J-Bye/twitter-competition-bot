@@ -1,7 +1,7 @@
-import rwClient from "./twitterClient.js";
-import config from "./config.js";
+const rwClient = require("./twitterClient.js");
+const config = require("./config.js");
 
-export default class User{
+class User{
     constructor(loggedInUser){
     this.loggedInUserId = loggedInUser.data.id;
     }
@@ -101,3 +101,5 @@ export default class User{
     }
 
 }
+
+module.exports = User

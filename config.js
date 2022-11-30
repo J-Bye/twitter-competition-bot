@@ -45,4 +45,4 @@ const config = {
     searchRateLimitsMilliseconds: 600000
 }
 
-export default config;
+module.exports = config
