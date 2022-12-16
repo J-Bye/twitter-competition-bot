@@ -2,8 +2,9 @@ const rwClient = require("./twitterClient.js");
 const User = require('./user.js');
 
 class Tweet {
-    constructor(tweet){
+    constructor(tweet, loggedInUser){
         this.tweet = tweet,
+        this.loggedInUser = loggedInUser,
         this.sensitiveContent = tweet.possibly_sensitive
     }
 
@@ -47,8 +48,7 @@ class Tweet {
         let retweeted = false;
         let friendsTagged = false;
 
-        const loggedInUser = await rwClient.currentUserV2();
-        const user = new User(loggedInUser);
+        const user = new User(this.loggedInUser);
     
         if(this.shouldFollowUser){
             await user.followUser(this.tweet.author_id)

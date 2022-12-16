@@ -4,6 +4,7 @@ const Tweet = require('./tweet.js');
 const databaseClient = require("./databaseClient.js");
 let mongoClient;
 let savedTweets;
+let loggedInUser;
 
 configureAndStart();
 
@@ -12,6 +13,8 @@ async function configureAndStart(){
     mongoClient = await databaseClient.connectToCluster();
     const db = mongoClient.db('twitter-competitions');
     savedTweets = db.collection('tweets');
+    //Get the logged in user
+    loggedInUser = await rwClient.currentUserV2();
     //Main startup method
     start()
 }
@@ -23,7 +26,13 @@ async function start(){
             //Retrieve from database which tweets have been entered
             const enteredCompetitionTweetIds = [];
             const databaseTweetCursor = await savedTweets.find();
-            await databaseTweetCursor.forEach((tweet)=>{enteredCompetitionTweetIds.push(tweet.tweetId)})
+            await databaseTweetCursor.forEach((tweet)=>{
+                //Multiple bots can enter the same competition, so filter by the logged in user id.
+                //Check for undefined is because of legacy data without loggedInUser properties
+                if (!tweet.loggedInUserId || tweet.loggedInUserId == loggedInUser.data.id){
+                    enteredCompetitionTweetIds.push(tweet.tweetId)
+                }
+            })
 
             //Search Twitter API for new competition tweets
             const foundTweets = (await findTweets()).data;
@@ -35,8 +44,11 @@ async function start(){
 
             //WAIT A MINIMUM OF 10 MINUTES
             const startTime = Date.now();
+
             //Process competition actions against filtered tweets
-            await processTweets(tweetsToAction, savedTweets);
+            await processTweets(tweetsToAction, savedTweets, loggedInUser);
+
+            //Start timer if needed to rate limit
             const endTime = Date.now();
             const timeTaken = endTime - startTime;
             if(timeTaken < config.searchRateLimitsMilliseconds){                
@@ -76,10 +88,10 @@ async function start(){
 
 }
 
-async function processTweets(tweets, mongoDbCollection){
+async function processTweets(tweets, mongoDbCollection, loggedInUser){
 
     for(let i = 0; i < tweets.length; i++){
-        const tweet = new Tweet(tweets[i]);
+        const tweet = new Tweet(tweets[i], loggedInUser);
 
         //Keep competition entries SFW (as much as possible)
         if(tweet.sensitiveContent){continue};
@@ -102,7 +114,8 @@ async function processTweets(tweets, mongoDbCollection){
                 liked: tweetProcessedData.liked,
                 followed: tweetProcessedData.followed,
                 retweeted: tweetProcessedData.retweeted,
-                taggedFriends: tweetProcessedData.friendsTagged
+                taggedFriends: tweetProcessedData.friendsTagged,
+                loggedInUserId: loggedInUser.data.id
             });
 
         //Random wait interval to avoid detection, defined by the config. User information
