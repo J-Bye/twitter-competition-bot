@@ -68,7 +68,7 @@ async function start(){
                 start();
             }
             else{
-                console.log(err);
+                console.error(new Date() + err);
                 //try to restart!
                 start()
             }

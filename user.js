@@ -15,18 +15,18 @@ class User{
     async runFollowPolicy(){
         let following = [];
         try{
-            const userFollowingPagnited1 = await rwClient.v2.following(this.loggedInUserId, { asPaginator: true, max_results: 1000});
-            following = userFollowingPagnited1.data.data;
-            if(userFollowingPagnited1.meta.next_token){
-                const userFollowingPagnited2 = await userFollowingPagnited1.fetchNext(1000);
-                following = [...following, ...userFollowingPagnited2.data.data];
+            const userFollowingPaginater = await rwClient.v2.following(this.loggedInUserId, { asPaginator: true});
+
+            for await (const user of userFollowingPaginater){
+                following.push(user);
             }
         }
+        
         catch(err){
             throw err;
         }
 
-        if(following.length < 2000){
+        if(following.length < config.maxFollowing){
             return
         }
 

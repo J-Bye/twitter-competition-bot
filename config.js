@@ -3,7 +3,7 @@ const config = {
     searchItems: ['retweet to enter', 'like to enter', 'to enter: retweet', 'to enter: follow', 'this tweet to enter', 'Retweet to win'],
     
     //Terms to exclude from the search. These are some common, annoying, undesirable keywords
-    negativeSearchItems : ['NFT', 'WL', 'Furry', 'ROBLOX', 'whitelist', 'OnlyFans', 'Whitelist', 'ROBUX', 'nudes', 'GTA', 'blockchain', 'crypto', 'Fortnite', 'BOT', 'airdrop'],
+    negativeSearchItems : ['NFT', 'Robux', 'Furry', 'ROBLOX', 'whitelist', 'OnlyFans', 'Whitelist', 'ROBUX', 'nudes', 'GTA', 'blockchain', 'crypto', 'Fortnite', 'BOT', 'airdrop'],
     
     //These are the friends who will be tagged if tagging is required (TURNED OFF CURRENTLY)
     friendsToTag : [
@@ -42,7 +42,10 @@ const config = {
     searchRateLimitResults: 100,
 
     //Based on 500k searches a month, at 100 searches results a pop, we must wait at least 10 minutes between searches to avoid hitting the limit
-    searchRateLimitsMilliseconds: 600000
+    searchRateLimitsMilliseconds: 600000,
+
+    //Will need to play with this figure!
+    maxFollowing: 2000
 }
 
 module.exports = config

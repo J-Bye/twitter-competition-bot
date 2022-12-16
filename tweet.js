@@ -79,7 +79,8 @@ ACTIONS TAKEN:
 Liked: ${liked}
 Followed: ${followed}
 Retweeted: ${retweeted}
-FriendsTagged: ${friendsTagged}`);
+FriendsTagged: ${friendsTagged}
+${new Date()}`);
             const entered = liked || followed || retweeted || friendsTagged
 const currentDate = new Date().toISOString()
             return {
