@@ -24,23 +24,24 @@ async function start(){
         //otherwise we can just log it.
         try{
             //Retrieve from database which tweets have been entered
-            const enteredCompetitionTweetIds = [];
+            const enteredCompetitionTweets = [];
             const databaseTweetCursor = await savedTweets.find();
             await databaseTweetCursor.forEach((tweet)=>{
                 //Multiple bots can enter the same competition, so filter by the logged in user id.
                 //Check for undefined is because of legacy data without loggedInUser properties
                 if (!tweet.loggedInUserId || tweet.loggedInUserId == loggedInUser.data.id){
-                    enteredCompetitionTweetIds.push(tweet.tweetId)
+                    enteredCompetitionTweets.push(tweet)
                 }
             })
 
             //Search Twitter API for new competition tweets
             const foundTweets = (await findTweets()).data;
 
-            //Remove already entered competitions from search results
+            //Remove already entered competitions from search results by looking for matching text as (some scammers tweet the same text across multiple accounts/tweets)
+            //ID is also needed, because the originally entered competition tweet can have its text edited, so a text match isn't sufficient
             const tweetsToAction = foundTweets.data
-            .filter((tweet)=>enteredCompetitionTweetIds
-            .every((x)=> x != tweet.id))
+            .filter((tweet)=>enteredCompetitionTweets
+            .every((x)=> x.tweetId != tweet.id && x.text != tweet.text))
 
             //WAIT A MINIMUM OF 10 MINUTES
             const startTime = Date.now();
