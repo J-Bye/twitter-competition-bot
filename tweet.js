@@ -1,5 +1,6 @@
 const rwClient = require("./twitterClient.js");
 const User = require('./user.js');
+const config = require('./config')
 
 class Tweet {
     constructor(tweet, loggedInUser){
@@ -10,35 +11,30 @@ class Tweet {
 
     //Getters to determine tweet actions
     get shouldFollowUser(){
-        let tweetToSearch = this.tweet.text.toLowerCase();
-        return tweetToSearch.includes('follow')
+        const tweetToSearch = this.tweet.text.toLowerCase(); 
+        const followIndicators = config.followIndicators;
+
+        return followIndicators.some((li)=> tweetToSearch.includes(li))
     }
     
     get shouldRetweet(){
-        let tweetToSearch = this.tweet.text.toLowerCase();
-        return tweetToSearch.includes('retweet') ||
-               tweetToSearch.includes('share') ||
-               tweetToSearch.includes(' rt') ||
-               tweetToSearch.includes('RT')
+        const tweetToSearch = this.tweet.text.toLowerCase(); 
+        const retweetIndicators = config.retweetIndicators
+
+        return retweetIndicators.some((li)=> tweetToSearch.includes(li))
     }
     
-    get shouldTagFriends(){
-        let tweetToSearch = this.tweet.text.toLowerCase();
-        return tweetToSearch.includes('tag') 
-    }
+    //Turned off while I figure out how to handle this!
+    // get shouldTagFriends(){
+    //     let tweetToSearch = this.tweet.text.toLowerCase();
+    //     return tweetToSearch.includes('tag') 
+    // }
 
     get shouldLikeTweet(){
-        let tweetToSearch = this.tweet.text.toLowerCase();
-        return tweetToSearch.includes('like') ||
-               tweetToSearch.includes('tweet a like') ||
-               tweetToSearch.includes('heart this tweet') ||
-               tweetToSearch.includes('like the tweet') ||
-               tweetToSearch.includes('favorite this tweet') ||
-               tweetToSearch.includes('favourite this tweet') ||
-               tweetToSearch.includes('like” this tweet') ||
-               tweetToSearch.includes('like and retweet') ||
-               tweetToSearch.includes('❤️')
-    
+        const tweetToSearch = this.tweet.text.toLowerCase(); 
+        const likeIndicators = config.likeIndicators
+
+        return likeIndicators.some((li)=> tweetToSearch.includes(li))
     }
 
     //Find the appropriate actions to perform and execute them, log results.
