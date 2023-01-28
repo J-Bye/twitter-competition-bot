@@ -37,18 +37,16 @@ async function start(){
             //Search Twitter API for new competition tweets
             const foundTweets = (await findTweets()).data;
 
+
             //Remove already entered competitions from search results by looking for matching text as (some scammers tweet the same text across multiple accounts/tweets)
             //ID is also needed, because the originally entered competition tweet can have its text edited, so a text match isn't sufficient
             const tweetsToAction = foundTweets.data
             .filter((tweet)=>enteredCompetitionTweets
             .every((x)=> x.tweetId != tweet.id && x.text != tweet.text))
-
             //WAIT A MINIMUM OF 10 MINUTES
             const startTime = Date.now();
-
             //Process competition actions against filtered tweets
             await processTweets(tweetsToAction, savedTweets, loggedInUser);
-
             //Start timer if needed to rate limit
             const endTime = Date.now();
             const timeTaken = endTime - startTime;
@@ -58,6 +56,8 @@ async function start(){
                 Waiting the remaining ${timeToWait/60000} minutes before continuing`)
                 await new Promise(resolve => setTimeout(resolve, timeToWait));
             }
+            
+            
             //Restart process!
             start();
 
@@ -82,7 +82,10 @@ async function start(){
             }
             else{
                 console.error(new Date() + err);
-                //try to restart!
+
+                //Try to restart after waiting
+                const timeToWait = config.searchRateLimitsMilliseconds;
+                await new Promise(resolve => setTimeout(resolve, timeToWait));
                 start()
             }
         }
@@ -136,6 +139,7 @@ function findTweets(){
     const negativeSearchItems = `-${config.negativeSearchItems.join(' -')}`
     const params = { 'max_results': config.searchRateLimitResults, 'expansions': 'author_id', 'tweet.fields': 'possibly_sensitive,created_at'}
 
+    const x = `(${searchTerms}) -is:retweet -is:quote -is:reply ${negativeSearchItems}`;
     return rwClient.v2.search(`(${searchTerms}) -is:retweet -is:quote -is:reply ${negativeSearchItems}`, params);
     
 }

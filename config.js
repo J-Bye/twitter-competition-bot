@@ -12,8 +12,9 @@ const config = {
     followIndicators : ['follow'],
 
     //Terms to exclude from the search. These are some common, annoying, undesirable keywords
-    negativeSearchItems : ['NFT', 'Robux', 'Furry', 'ROBLOX', 'whitelist', 'OnlyFans', 'Whitelist', 'ROBUX', 'nudes', 'GTA', 'blockchain', 'crypto', 'Fortnite', 'BOT', 'airdrop'],
-    
+    //Multi word keywords must be escaped with backslashes
+    negativeSearchItems : ['NFT', 'Robux', 'Furry', 'ROBLOX', 'whitelist', 'OnlyFans', 'Whitelist', 'ROBUX', 'nudes', 'GTA', 'blockchain', 'crypto', 'Fortnite', 'BOT', 'airdrop', 'shrooms', 'grams', 'NFT', 'coin', 'digital', 'psychedelics', 'Dogecoin', 'ETH', 'XRP'],
+
     //These are the friends who will be tagged if tagging is required (TURNED OFF CURRENTLY)
     friendsToTag : [
     {   name: 'Josh', 
